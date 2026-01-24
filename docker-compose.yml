@@ -1,0 +1,71 @@
+# =====================================================
+# K-Means Image Compressor - Docker Compose
+# =====================================================
+# Development and Production configurations
+# =====================================================
+
+version: '3.8'
+
+services:
+  # Production service
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kmeans-compressor
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - SECRET_KEY=${SECRET_KEY:-change-this-in-production}
+      - MAX_CONTENT_LENGTH=16777216
+    volumes:
+      - uploads_data:/app/uploads
+      - compressed_data:/app/compressed
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Development service (uncomment to use)
+  # app-dev:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: kmeans-compressor-dev
+  #   ports:
+  #     - "5000:5000"
+  #   environment:
+  #     - FLASK_ENV=development
+  #     - FLASK_DEBUG=true
+  #     - SECRET_KEY=dev-secret-key
+  #   volumes:
+  #     - .:/app
+  #     - uploads_data:/app/uploads
+  #     - compressed_data:/app/compressed
+  #   command: python app.py
+
+  # Nginx reverse proxy (optional, for production)
+  # nginx:
+  #   image: nginx:alpine
+  #   container_name: kmeans-nginx
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/nginx.conf:ro
+  #     - ./ssl:/etc/nginx/ssl:ro
+  #   depends_on:
+  #     - app
+  #   restart: unless-stopped
+
+volumes:
+  uploads_data:
+  compressed_data:
+
+networks:
+  default:
+    name: kmeans-network

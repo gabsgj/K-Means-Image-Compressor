@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K-Means Image Compressor | AI-Powered Color Reduction</title>
+    <meta name="description" content="Compress images using K-Means clustering algorithm. Reduce file sizes while preserving visual quality through intelligent color quantization.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Cropper.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <i class="fas fa-compress-alt"></i>
+                <span>K-Means Compressor</span>
+            </a>
+            <div class="nav-links">
+                <a href="/" class="active">Home</a>
+                <a href="/about">How It Works</a>
+                <a href="/api-docs">API</a>
+                <a href="https://github.com" target="_blank" class="github-link">
+                    <i class="fab fa-github"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="hero-content">
+            <h1>Intelligent Image Compression</h1>
+            <p>Reduce image file sizes using the K-Means clustering algorithm. Preserve visual quality while achieving significant compression through smart color quantization.</p>
+            <div class="hero-features">
+                <div class="feature">
+                    <i class="fas fa-bolt"></i>
+                    <span>Fast Processing</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-palette"></i>
+                    <span>Color Preservation</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-cloud"></i>
+                    <span>Cloud Ready</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Application -->
+    <main class="app-container">
+        <!-- Upload Section -->
+        <section class="upload-section" id="uploadSection">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-content">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <h3>Drag & Drop your image here</h3>
+                    <p>or click to browse</p>
+                    <span class="file-types">PNG, JPG, JPEG, GIF, BMP, WebP (Max 16MB)</span>
+                </div>
+                <input type="file" id="fileInput" accept="image/*" hidden>
+            </div>
+        </section>
+
+        <!-- Settings & Preview Section -->
+        <section class="settings-section hidden" id="settingsSection">
+            <div class="settings-container">
+                <!-- Original Image Preview -->
+                <div class="preview-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-image"></i> Original Image</h3>
+                        <span class="badge" id="originalSize">-</span>
+                    </div>
+                    <div class="image-preview" id="originalPreview">
+                        <img src="" alt="Original Image" id="originalImage">
+                    </div>
+                    <div class="image-info" id="originalInfo"></div>
+                </div>
+
+                <!-- Compression Settings -->
+                <div class="settings-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-sliders-h"></i> Compression Settings</h3>
+                    </div>
+                    
+                    <!-- Presets -->
+                    <div class="preset-section">
+                        <label>Quick Presets</label>
+                        <div class="preset-buttons" id="presetButtons">
+                            <button class="preset-btn" data-colors="4" data-iters="15">
+                                <i class="fas fa-compress"></i>
+                                <span>Max Compress</span>
+                            </button>
+                            <button class="preset-btn" data-colors="8" data-iters="12">
+                                <i class="fas fa-balance-scale"></i>
+                                <span>High Compress</span>
+                            </button>
+                            <button class="preset-btn active" data-colors="16" data-iters="10">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Balanced</span>
+                            </button>
+                            <button class="preset-btn" data-colors="32" data-iters="10">
+                                <i class="fas fa-star"></i>
+                                <span>High Quality</span>
+                            </button>
+                            <button class="preset-btn" data-colors="64" data-iters="8">
+                                <i class="fas fa-gem"></i>
+                                <span>Max Quality</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Manual Settings -->
+                    <div class="manual-settings">
+                        <div class="setting-group">
+                            <label for="nColors">
+                                <span>Number of Colors (K)</span>
+                                <span class="setting-value" id="nColorsValue">16</span>
+                            </label>
+                            <input type="range" id="nColors" min="2" max="128" value="16">
+                            <div class="setting-hint">
+                                <span>2 (Smallest)</span>
+                                <span>128 (Largest)</span>
+                            </div>
+                        </div>
+
+                        <div class="setting-group">
+                            <label for="maxIters">
+                                <span>Max Iterations</span>
+                                <span class="setting-value" id="maxItersValue">10</span>
+                            </label>
+                            <input type="range" id="maxIters" min="1" max="50" value="10">
+                            <div class="setting-hint">
+                                <span>1 (Faster)</span>
+                                <span>50 (More Accurate)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dimension Settings -->
+                    <div class="dimension-settings">
+                        <div class="section-header collapsible" id="dimensionToggle">
+                            <h4><i class="fas fa-ruler-combined"></i> Output Dimensions</h4>
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                        </div>
+                        <div class="collapsible-content" id="dimensionContent">
+                            <!-- Dimension Presets -->
+                            <div class="dimension-presets">
+                                <label>Quick Size Presets</label>
+                                <select id="dimensionPreset" class="select-input">
+                                    <option value="">Original Size</option>
+                                    <option value="1920,1080">Full HD (1920×1080)</option>
+                                    <option value="1280,720">HD (1280×720)</option>
+                                    <option value="1080,1080">Square (1080×1080)</option>
+                                    <option value="1080,1350">Instagram Post (1080×1350)</option>
+                                    <option value="1080,1920">Instagram Story (1080×1920)</option>
+                                    <option value="1200,675">Twitter Post (1200×675)</option>
+                                    <option value="820,312">Facebook Cover (820×312)</option>
+                                    <option value="320,180">Thumbnail (320×180)</option>
+                                    <option value="256,256">Icon (256×256)</option>
+                                    <option value="custom">Custom...</option>
+                                </select>
+                            </div>
+
+                            <!-- Custom Dimensions -->
+                            <div class="custom-dimensions hidden" id="customDimensions">
+                                <div class="dimension-inputs">
+                                    <div class="dimension-input">
+                                        <label for="targetWidth">Width (px)</label>
+                                        <input type="number" id="targetWidth" min="1" max="8000" placeholder="Auto">
+                                    </div>
+                                    <span class="dimension-separator">×</span>
+                                    <div class="dimension-input">
+                                        <label for="targetHeight">Height (px)</label>
+                                        <input type="number" id="targetHeight" min="1" max="8000" placeholder="Auto">
+                                    </div>
+                                    <button class="btn btn-icon" id="lockAspectBtn" title="Lock Aspect Ratio">
+                                        <i class="fas fa-lock"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Resize Mode -->
+                            <div class="resize-mode-section" id="resizeModeSection">
+                                <label>Resize Mode</label>
+                                <div class="resize-mode-buttons">
+                                    <button class="mode-btn active" data-mode="fit" title="Fit within dimensions, may add padding">
+                                        <i class="fas fa-compress-arrows-alt"></i>
+                                        <span>Fit</span>
+                                    </button>
+                                    <button class="mode-btn" data-mode="fill" title="Fill dimensions, may crop edges">
+                                        <i class="fas fa-expand-arrows-alt"></i>
+                                        <span>Fill</span>
+                                    </button>
+                                    <button class="mode-btn" data-mode="stretch" title="Stretch to exact dimensions">
+                                        <i class="fas fa-arrows-alt-h"></i>
+                                        <span>Stretch</span>
+                                    </button>
+                                    <button class="mode-btn" data-mode="crop" title="Open crop tool">
+                                        <i class="fas fa-crop-alt"></i>
+                                        <span>Crop</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Target File Size -->
+                    <div class="filesize-settings">
+                        <div class="section-header collapsible" id="filesizeToggle">
+                            <h4><i class="fas fa-file-archive"></i> Target File Size</h4>
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                        </div>
+                        <div class="collapsible-content" id="filesizeContent">
+                            <div class="filesize-input-group">
+                                <div class="checkbox-input">
+                                    <input type="checkbox" id="enableTargetSize">
+                                    <label for="enableTargetSize">Enable target file size</label>
+                                </div>
+                                <div class="filesize-controls hidden" id="filesizeControls">
+                                    <div class="filesize-input">
+                                        <input type="number" id="targetSizeKb" min="1" max="50000" value="500" placeholder="500">
+                                        <span class="input-suffix">KB</span>
+                                    </div>
+                                    <div class="filesize-presets">
+                                        <button class="size-preset-btn" data-size="100">100KB</button>
+                                        <button class="size-preset-btn" data-size="250">250KB</button>
+                                        <button class="size-preset-btn active" data-size="500">500KB</button>
+                                        <button class="size-preset-btn" data-size="1000">1MB</button>
+                                        <button class="size-preset-btn" data-size="2000">2MB</button>
+                                    </div>
+                                    <p class="filesize-hint">
+                                        <i class="fas fa-info-circle"></i>
+                                        The compressor will adjust quality and colors to meet this target.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary" id="resetBtn">
+                            <i class="fas fa-redo"></i> Reset
+                        </button>
+                        <button class="btn btn-primary" id="compressBtn">
+                            <i class="fas fa-magic"></i> Compress Image
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Compressed Image Preview -->
+                <div class="preview-card result-card hidden" id="resultCard">
+                    <div class="card-header">
+                        <h3><i class="fas fa-file-image"></i> Compressed Image</h3>
+                        <span class="badge success" id="compressedSize">-</span>
+                    </div>
+                    <div class="image-preview" id="compressedPreview">
+                        <img src="" alt="Compressed Image" id="compressedImage">
+                    </div>
+                    <div class="compression-stats" id="compressionStats"></div>
+                    <div class="download-section">
+                        <button class="btn btn-success" id="downloadBtn">
+                            <i class="fas fa-download"></i> Download Compressed Image
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Comparison Section -->
+        <section class="comparison-section hidden" id="comparisonSection">
+            <div class="comparison-header">
+                <h2><i class="fas fa-columns"></i> Before & After Comparison</h2>
+                <p>Drag the slider to compare original and compressed images</p>
+            </div>
+            <div class="comparison-container" id="comparisonContainer">
+                <div class="comparison-wrapper">
+                    <img src="" alt="Original" id="compareOriginal" class="compare-img">
+                    <div class="comparison-overlay" id="comparisonOverlay">
+                        <img src="" alt="Compressed" id="compareCompressed" class="compare-img">
+                    </div>
+                    <div class="comparison-slider" id="comparisonSlider">
+                        <div class="slider-button">
+                            <i class="fas fa-arrows-alt-h"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="comparison-labels">
+                    <span>Original</span>
+                    <span>Compressed</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Crop Modal -->
+    <div class="modal-overlay hidden" id="cropModal">
+        <div class="modal-content crop-modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-crop-alt"></i> Crop Image</h3>
+                <button class="modal-close" id="closeCropModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="crop-info">
+                    <span id="cropDimensions">Selection: - × -</span>
+                    <span id="cropAspectInfo"></span>
+                </div>
+                <div class="crop-container">
+                    <img src="" alt="Crop Preview" id="cropImage">
+                </div>
+                <div class="crop-controls">
+                    <div class="crop-aspect-buttons">
+                        <label>Aspect Ratio:</label>
+                        <button class="aspect-btn" data-aspect="free">Free</button>
+                        <button class="aspect-btn" data-aspect="1:1">1:1</button>
+                        <button class="aspect-btn" data-aspect="4:3">4:3</button>
+                        <button class="aspect-btn" data-aspect="16:9">16:9</button>
+                        <button class="aspect-btn" data-aspect="9:16">9:16</button>
+                        <button class="aspect-btn" data-aspect="custom">Custom</button>
+                    </div>
+                    <div class="crop-actions">
+                        <button class="btn btn-icon" id="rotateLeftBtn" title="Rotate Left">
+                            <i class="fas fa-undo"></i>
+                        </button>
+                        <button class="btn btn-icon" id="rotateRightBtn" title="Rotate Right">
+                            <i class="fas fa-redo"></i>
+                        </button>
+                        <button class="btn btn-icon" id="flipHBtn" title="Flip Horizontal">
+                            <i class="fas fa-arrows-alt-h"></i>
+                        </button>
+                        <button class="btn btn-icon" id="flipVBtn" title="Flip Vertical">
+                            <i class="fas fa-arrows-alt-v"></i>
+                        </button>
+                        <button class="btn btn-icon" id="resetCropBtn" title="Reset">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelCropBtn">Cancel</button>
+                <button class="btn btn-primary" id="applyCropBtn">
+                    <i class="fas fa-check"></i> Apply Crop
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay hidden" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner">
+                <div class="spinner-ring"></div>
+                <i class="fas fa-palette"></i>
+            </div>
+            <h3 id="loadingText">Processing your image...</h3>
+            <p id="loadingSubtext">Running K-Means clustering algorithm</p>
+            <div class="loading-progress">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>K-Means Image Compressor</h4>
+                <p>An open-source image compression tool powered by the K-Means clustering algorithm. Built with Python, Flask, and modern web technologies.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about">How It Works</a></li>
+                    <li><a href="/api-docs">API Documentation</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Technology Stack</h4>
+                <div class="tech-stack">
+                    <span class="tech-badge">Python</span>
+                    <span class="tech-badge">Flask</span>
+                    <span class="tech-badge">NumPy</span>
+                    <span class="tech-badge">Pillow</span>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 K-Means Image Compressor. Made with <i class="fas fa-heart"></i> for learning.</p>
+        </div>
+    </footer>
+
+    <!-- Cropper.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

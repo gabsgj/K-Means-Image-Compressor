@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How It Works | K-Means Image Compressor</title>
+    <meta name="description" content="Learn how K-Means clustering algorithm works for image compression. Understand the mathematics and implementation behind color quantization.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <i class="fas fa-compress-alt"></i>
+                <span>K-Means Compressor</span>
+            </a>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/about" class="active">How It Works</a>
+                <a href="/api-docs">API</a>
+                <a href="https://github.com" target="_blank" class="github-link">
+                    <i class="fab fa-github"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Content -->
+    <main class="about-container">
+        <section class="about-hero">
+            <h1><i class="fas fa-brain"></i> How K-Means Compression Works</h1>
+            <p>Understanding the algorithm behind intelligent color quantization</p>
+        </section>
+
+        <div class="about-content">
+            <!-- Introduction -->
+            <section class="about-section">
+                <h2><i class="fas fa-lightbulb"></i> The Big Picture</h2>
+                <p>Images typically use 24-bit color (8 bits each for Red, Green, and Blue), allowing for over 16 million unique colors. However, most images don't need all these colors to look visually appealing.</p>
+                <p>K-Means compression reduces the number of colors to a smaller palette (e.g., 16 or 32 colors), significantly reducing file size while maintaining visual quality.</p>
+                
+                <div class="info-card highlight">
+                    <div class="info-icon"><i class="fas fa-chart-pie"></i></div>
+                    <div class="info-content">
+                        <h4>Compression Example</h4>
+                        <p>A 128×128 image with 24-bit color uses <strong>393,216 bits</strong>. With 16 colors, it uses only <strong>65,920 bits</strong> — a <strong>6x reduction!</strong></p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Algorithm Steps -->
+            <section class="about-section">
+                <h2><i class="fas fa-list-ol"></i> The K-Means Algorithm</h2>
+                
+                <div class="algorithm-steps">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Initialize Centroids</h4>
+                            <p>Randomly select K colors from the image as initial cluster centers (centroids). We use K-Means++ for smarter initialization.</p>
+                            <code>centroids = init_centroids(pixels, K)</code>
+                        </div>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Assign Pixels to Clusters</h4>
+                            <p>For each pixel, find the centroid with the smallest Euclidean distance in RGB color space.</p>
+                            <code>c[i] = argmin(||x[i] - μ[j]||²)</code>
+                        </div>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Update Centroids</h4>
+                            <p>Recalculate each centroid as the mean color of all pixels assigned to it.</p>
+                            <code>μ[k] = (1/|C[k]|) × Σ x[i]</code>
+                        </div>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Iterate Until Convergence</h4>
+                            <p>Repeat steps 2-3 until centroids stop moving significantly or max iterations reached.</p>
+                            <code>while (shift > tolerance && iter < max_iters)</code>
+                        </div>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Reconstruct Image</h4>
+                            <p>Replace each pixel with the color of its assigned centroid to create the compressed image.</p>
+                            <code>compressed[i] = centroids[assignment[i]]</code>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Math Section -->
+            <section class="about-section">
+                <h2><i class="fas fa-calculator"></i> The Mathematics</h2>
+                
+                <div class="math-grid">
+                    <div class="math-card">
+                        <h4>Distance Calculation</h4>
+                        <div class="math-formula">
+                            d(x, μ) = √[(R₁-R₂)² + (G₁-G₂)² + (B₁-B₂)²]
+                        </div>
+                        <p>Euclidean distance in 3D RGB color space</p>
+                    </div>
+                    
+                    <div class="math-card">
+                        <h4>Centroid Update</h4>
+                        <div class="math-formula">
+                            μₖ = (1/m) × Σ xᵢ for all xᵢ ∈ Cₖ
+                        </div>
+                        <p>Mean of all points in cluster k</p>
+                    </div>
+                    
+                    <div class="math-card">
+                        <h4>Objective Function</h4>
+                        <div class="math-formula">
+                            J = Σᵢ Σₖ wᵢₖ × ||xᵢ - μₖ||²
+                        </div>
+                        <p>Minimize within-cluster sum of squares</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- K-Means++ Section -->
+            <section class="about-section">
+                <h2><i class="fas fa-rocket"></i> K-Means++ Initialization</h2>
+                <p>We use K-Means++ for smarter centroid initialization, which leads to faster convergence and better results.</p>
+                
+                <div class="kmeans-plus-steps">
+                    <div class="kpp-step">
+                        <span class="kpp-num">1</span>
+                        <span>Choose the first centroid randomly from data points</span>
+                    </div>
+                    <div class="kpp-step">
+                        <span class="kpp-num">2</span>
+                        <span>For each point, compute distance to nearest centroid</span>
+                    </div>
+                    <div class="kpp-step">
+                        <span class="kpp-num">3</span>
+                        <span>Select next centroid with probability proportional to distance²</span>
+                    </div>
+                    <div class="kpp-step">
+                        <span class="kpp-num">4</span>
+                        <span>Repeat until K centroids are chosen</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Trade-offs -->
+            <section class="about-section">
+                <h2><i class="fas fa-balance-scale"></i> Understanding Trade-offs</h2>
+                
+                <div class="tradeoff-grid">
+                    <div class="tradeoff-card">
+                        <div class="tradeoff-header fewer-colors">
+                            <i class="fas fa-compress"></i>
+                            <h4>Fewer Colors (K=4-8)</h4>
+                        </div>
+                        <ul>
+                            <li><i class="fas fa-check"></i> Smaller file size</li>
+                            <li><i class="fas fa-check"></i> Faster processing</li>
+                            <li><i class="fas fa-times"></i> More visible banding</li>
+                            <li><i class="fas fa-times"></i> Loss of detail</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="tradeoff-card">
+                        <div class="tradeoff-header balanced">
+                            <i class="fas fa-balance-scale"></i>
+                            <h4>Balanced (K=16-32)</h4>
+                        </div>
+                        <ul>
+                            <li><i class="fas fa-check"></i> Good compression ratio</li>
+                            <li><i class="fas fa-check"></i> Acceptable quality</li>
+                            <li><i class="fas fa-check"></i> Moderate processing time</li>
+                            <li><i class="fas fa-check"></i> Best for most use cases</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="tradeoff-card">
+                        <div class="tradeoff-header more-colors">
+                            <i class="fas fa-palette"></i>
+                            <h4>More Colors (K=64-128)</h4>
+                        </div>
+                        <ul>
+                            <li><i class="fas fa-check"></i> Better visual quality</li>
+                            <li><i class="fas fa-check"></i> Preserves gradients</li>
+                            <li><i class="fas fa-times"></i> Larger file size</li>
+                            <li><i class="fas fa-times"></i> Slower processing</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CTA -->
+            <section class="about-cta">
+                <h2>Ready to Try It?</h2>
+                <p>Experience the K-Means compression algorithm in action!</p>
+                <a href="/" class="btn btn-primary btn-large">
+                    <i class="fas fa-magic"></i> Compress an Image
+                </a>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>K-Means Image Compressor</h4>
+                <p>An open-source image compression tool powered by the K-Means clustering algorithm.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about">How It Works</a></li>
+                    <li><a href="/api-docs">API Documentation</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 K-Means Image Compressor. Made with <i class="fas fa-heart"></i> for learning.</p>
+        </div>
+    </footer>
+</body>
+</html>

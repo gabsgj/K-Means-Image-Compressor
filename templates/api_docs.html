@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation | K-Means Image Compressor</title>
+    <meta name="description" content="RESTful API documentation for the K-Means image compression service. Integrate image compression into your applications.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <i class="fas fa-compress-alt"></i>
+                <span>K-Means Compressor</span>
+            </a>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/about">How It Works</a>
+                <a href="/api-docs" class="active">API</a>
+                <a href="https://github.com" target="_blank" class="github-link">
+                    <i class="fab fa-github"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Content -->
+    <main class="api-docs-container">
+        <aside class="api-sidebar">
+            <h3>API Endpoints</h3>
+            <nav class="api-nav">
+                <a href="#overview">Overview</a>
+                <a href="#health">Health Check</a>
+                <a href="#upload">Upload Image</a>
+                <a href="#compress">Compress Image</a>
+                <a href="#compress-direct">Compress Direct</a>
+                <a href="#presets">Get Presets</a>
+                <a href="#errors">Error Handling</a>
+            </nav>
+        </aside>
+
+        <div class="api-content">
+            <section id="overview" class="api-section">
+                <h1><i class="fas fa-book"></i> API Documentation</h1>
+                <p class="api-intro">The K-Means Image Compressor provides a RESTful API for programmatic image compression. All endpoints return JSON responses and support CORS.</p>
+                
+                <div class="api-base">
+                    <h4>Base URL</h4>
+                    <code class="base-url">https://your-domain.com/api</code>
+                </div>
+
+                <div class="api-auth-note">
+                    <i class="fas fa-info-circle"></i>
+                    <span>This API is currently open and doesn't require authentication. Rate limiting may apply.</span>
+                </div>
+            </section>
+
+            <section id="health" class="api-section">
+                <h2>Health Check</h2>
+                <p>Check if the API service is running and healthy.</p>
+                
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <code>/api/health</code>
+                    </div>
+                    
+                    <h4>Response</h4>
+                    <pre class="code-block"><code>{
+    "status": "healthy",
+    "timestamp": "2024-01-15T10:30:00.000Z",
+    "version": "1.0.0"
+}</code></pre>
+                </div>
+            </section>
+
+            <section id="upload" class="api-section">
+                <h2>Upload Image</h2>
+                <p>Upload an image for later compression. Returns an image ID for subsequent operations.</p>
+                
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <code>/api/upload</code>
+                    </div>
+                    
+                    <h4>Request</h4>
+                    <table class="params-table">
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>image</code></td>
+                                <td>File (multipart/form-data)</td>
+                                <td>Image file (PNG, JPG, JPEG, GIF, BMP, WebP). Max 16MB.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4>cURL Example</h4>
+                    <pre class="code-block"><code>curl -X POST \
+  -F "image=@photo.jpg" \
+  https://your-domain.com/api/upload</code></pre>
+
+                    <h4>Response</h4>
+                    <pre class="code-block"><code>{
+    "success": true,
+    "image_id": "20240115_103000_a1b2c3d4.jpg",
+    "preview_url": "https://your-domain.com/api/original/20240115_103000_a1b2c3d4.jpg",
+    "dimensions": {
+        "width": 1920,
+        "height": 1080
+    },
+    "format": "JPEG",
+    "file_size": 524288
+}</code></pre>
+                </div>
+            </section>
+
+            <section id="compress" class="api-section">
+                <h2>Compress Image</h2>
+                <p>Compress a previously uploaded image using K-Means clustering.</p>
+                
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <code>/api/compress</code>
+                    </div>
+                    
+                    <h4>Request Body (JSON)</h4>
+                    <table class="params-table">
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Type</th>
+                                <th>Default</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>image_id</code> <span class="required">*</span></td>
+                                <td>string</td>
+                                <td>-</td>
+                                <td>ID of the uploaded image</td>
+                            </tr>
+                            <tr>
+                                <td><code>n_colors</code></td>
+                                <td>integer</td>
+                                <td>16</td>
+                                <td>Number of colors (2-256)</td>
+                            </tr>
+                            <tr>
+                                <td><code>max_iters</code></td>
+                                <td>integer</td>
+                                <td>10</td>
+                                <td>Maximum iterations (1-100)</td>
+                            </tr>
+                            <tr>
+                                <td><code>quality</code></td>
+                                <td>integer</td>
+                                <td>95</td>
+                                <td>Output JPEG quality (1-100)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4>cURL Example</h4>
+                    <pre class="code-block"><code>curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"image_id": "20240115_103000_a1b2c3d4.jpg", "n_colors": 16}' \
+  https://your-domain.com/api/compress</code></pre>
+
+                    <h4>Response</h4>
+                    <pre class="code-block"><code>{
+    "success": true,
+    "compressed_id": "compressed_20240115_103000_a1b2c3d4.jpg",
+    "download_url": "https://your-domain.com/api/download/compressed_...",
+    "preview_url": "https://your-domain.com/api/compressed/compressed_...",
+    "stats": {
+        "original_file_size": 524288,
+        "compressed_file_size": 156432,
+        "file_compression_ratio": 3.35,
+        "theoretical_compression_ratio": 6.0,
+        "original_colors": 45821,
+        "reduced_colors": 16,
+        "iterations": 8,
+        "processing_time_ms": 1234.56
+    }
+}</code></pre>
+                </div>
+            </section>
+
+            <section id="compress-direct" class="api-section">
+                <h2>Compress Direct</h2>
+                <p>Upload and compress an image in a single request. Returns the compressed image directly.</p>
+                
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <code>/api/compress-direct</code>
+                    </div>
+                    
+                    <h4>Request (multipart/form-data)</h4>
+                    <table class="params-table">
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Type</th>
+                                <th>Default</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>image</code> <span class="required">*</span></td>
+                                <td>File</td>
+                                <td>-</td>
+                                <td>Image file to compress</td>
+                            </tr>
+                            <tr>
+                                <td><code>n_colors</code></td>
+                                <td>integer</td>
+                                <td>16</td>
+                                <td>Number of colors</td>
+                            </tr>
+                            <tr>
+                                <td><code>max_iters</code></td>
+                                <td>integer</td>
+                                <td>10</td>
+                                <td>Maximum iterations</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4>cURL Example</h4>
+                    <pre class="code-block"><code>curl -X POST \
+  -F "image=@photo.jpg" \
+  -F "n_colors=16" \
+  -o compressed.png \
+  https://your-domain.com/api/compress-direct</code></pre>
+
+                    <h4>Response</h4>
+                    <p class="response-note">Returns the compressed image file directly (image/png).</p>
+                </div>
+            </section>
+
+            <section id="presets" class="api-section">
+                <h2>Get Presets</h2>
+                <p>Get predefined compression presets for common use cases.</p>
+                
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <code>/api/presets</code>
+                    </div>
+                    
+                    <h4>Response</h4>
+                    <pre class="code-block"><code>{
+    "success": true,
+    "presets": [
+        {
+            "name": "Maximum Compression",
+            "description": "Smallest file size, reduced quality",
+            "n_colors": 4,
+            "max_iters": 15
+        },
+        {
+            "name": "Balanced",
+            "description": "Good balance of size and quality",
+            "n_colors": 16,
+            "max_iters": 10
+        },
+        ...
+    ]
+}</code></pre>
+                </div>
+            </section>
+
+            <section id="errors" class="api-section">
+                <h2>Error Handling</h2>
+                <p>All API errors return a consistent JSON format with an error message.</p>
+                
+                <div class="error-codes">
+                    <h4>HTTP Status Codes</h4>
+                    <table class="params-table">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>200</code></td>
+                                <td>Success</td>
+                            </tr>
+                            <tr>
+                                <td><code>400</code></td>
+                                <td>Bad Request - Invalid parameters</td>
+                            </tr>
+                            <tr>
+                                <td><code>404</code></td>
+                                <td>Not Found - Resource doesn't exist</td>
+                            </tr>
+                            <tr>
+                                <td><code>413</code></td>
+                                <td>Payload Too Large - File exceeds 16MB</td>
+                            </tr>
+                            <tr>
+                                <td><code>500</code></td>
+                                <td>Internal Server Error</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h4>Error Response Format</h4>
+                <pre class="code-block"><code>{
+    "success": false,
+    "error": "Descriptive error message"
+}</code></pre>
+            </section>
+
+            <!-- Python Example -->
+            <section class="api-section">
+                <h2><i class="fab fa-python"></i> Python Example</h2>
+                <pre class="code-block python"><code>import requests
+
+# Upload and compress an image
+def compress_image(image_path, n_colors=16):
+    base_url = "https://your-domain.com/api"
+    
+    # Upload
+    with open(image_path, 'rb') as f:
+        response = requests.post(
+            f"{base_url}/upload",
+            files={'image': f}
+        )
+    
+    image_id = response.json()['image_id']
+    
+    # Compress
+    response = requests.post(
+        f"{base_url}/compress",
+        json={
+            'image_id': image_id,
+            'n_colors': n_colors
+        }
+    )
+    
+    result = response.json()
+    
+    # Download
+    download_url = result['download_url']
+    img_response = requests.get(download_url)
+    
+    with open('compressed.png', 'wb') as f:
+        f.write(img_response.content)
+    
+    return result['stats']
+
+# Usage
+stats = compress_image('photo.jpg', n_colors=16)
+print(f"Compression ratio: {stats['file_compression_ratio']}x")</code></pre>
+            </section>
+
+            <!-- JavaScript Example -->
+            <section class="api-section">
+                <h2><i class="fab fa-js"></i> JavaScript Example</h2>
+                <pre class="code-block javascript"><code>async function compressImage(file, nColors = 16) {
+    const baseUrl = 'https://your-domain.com/api';
+    
+    // Upload
+    const formData = new FormData();
+    formData.append('image', file);
+    
+    const uploadResponse = await fetch(`${baseUrl}/upload`, {
+        method: 'POST',
+        body: formData
+    });
+    const { image_id } = await uploadResponse.json();
+    
+    // Compress
+    const compressResponse = await fetch(`${baseUrl}/compress`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            image_id,
+            n_colors: nColors
+        })
+    });
+    
+    return await compressResponse.json();
+}
+
+// Usage
+const fileInput = document.querySelector('input[type="file"]');
+fileInput.addEventListener('change', async (e) => {
+    const result = await compressImage(e.target.files[0], 16);
+    console.log(`Compressed! Ratio: ${result.stats.file_compression_ratio}x`);
+});</code></pre>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>K-Means Image Compressor</h4>
+                <p>An open-source image compression API powered by the K-Means clustering algorithm.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 K-Means Image Compressor. Made with <i class="fas fa-heart"></i> for learning.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scroll for sidebar navigation
+        document.querySelectorAll('.api-nav a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href').substring(1);
+                document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // Highlight active section in sidebar
+        const sections = document.querySelectorAll('.api-section');
+        const navLinks = document.querySelectorAll('.api-nav a');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (scrollY >= sectionTop - 100) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
