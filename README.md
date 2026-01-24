@@ -9,8 +9,9 @@
 [![NumPy](https://img.shields.io/badge/NumPy-Optimized-013243?style=flat&logo=numpy&logoColor=white)](https://numpy.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=flat&logo=github&logoColor=white)](https://github.com/gabsgj/K-Means-Image-Compressor)
 
-[Live Demo](#) · [Documentation](#api-documentation) · [Report Bug](https://github.com/yourusername/kmeans-image-compressor/issues)
+[Live Demo](#) · [Documentation](#api-documentation) · [Report Bug](https://github.com/gabsgj/K-Means-Image-Compressor/issues)
 
 </div>
 
@@ -45,8 +46,8 @@ A production-ready web application that leverages the K-Means clustering algorit
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/kmeans-image-compressor.git
-cd kmeans-image-compressor
+git clone https://github.com/gabsgj/K-Means-Image-Compressor.git
+cd K-Means-Image-Compressor
 
 # Create and activate virtual environment
 python -m venv venv
