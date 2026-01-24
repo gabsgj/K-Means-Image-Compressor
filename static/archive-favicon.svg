@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FA8112;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e06a00;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Background circle -->
+  <circle cx="16" cy="16" r="15" fill="url(#bg)"/>
+  <!-- Compress arrows icon (simplified fa-compress-alt) -->
+  <g fill="#FFFFFF">
+    <!-- Top-left arrow -->
+    <path d="M8 13V8h5v2h-3v3H8z"/>
+    <!-- Top-right arrow -->
+    <path d="M24 13v-3h-3V8h5v5h-2z"/>
+    <!-- Bottom-left arrow -->
+    <path d="M8 19v5h5v-2h-3v-3H8z"/>
+    <!-- Bottom-right arrow -->
+    <path d="M24 19v3h-3v2h5v-5h-2z"/>
+    <!-- Center dot -->
+    <circle cx="16" cy="16" r="2"/>
+  </g>
+</svg>
