@@ -11,7 +11,7 @@
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=flat&logo=github&logoColor=white)](https://github.com/gabsgj/K-Means-Image-Compressor)
 
-[Live Demo](#) · [Documentation](#api-documentation) · [Report Bug](https://github.com/gabsgj/K-Means-Image-Compressor/issues)
+[Live Demo](https://imagecompressor.gabrieljames.me/) · [Documentation](#api-documentation) · [Report Bug](https://github.com/gabsgj/K-Means-Image-Compressor/issues)
 
 </div>
 
