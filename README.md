@@ -16,7 +16,11 @@
 </div>
 
 ---
+<img width="1897" height="1606" alt="Image" src="https://github.com/user-attachments/assets/98ae54f4-eea6-4838-8a2b-df78bee6e7df" />
+<img width="1897" height="3981" alt="Image" src="https://github.com/user-attachments/assets/b8a9738f-c02b-438e-bfa8-63407b37a818" />
+<img width="1897" height="1057" alt="Image" src="https://github.com/user-attachments/assets/28a0988c-2494-4e6c-a5c8-6b8e27329819" />
 
+---
 ## Overview
 
 A production-ready web application that leverages the K-Means clustering algorithm to intelligently compress images through color quantization. The application reduces file sizes by **up to 6x** while preserving visual quality, making it ideal for web optimization, storage reduction, and bandwidth conservation.
