@@ -16,18 +16,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Install Python dependencies
 COPY requirements.txt .
-RUN pip install --no-cache-dir --user -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Stage 2: Production
 FROM python:3.11-slim
 
 WORKDIR /app
 
+# Install Python dependencies in runtime image
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
 # Create non-root user for security
 RUN useradd --create-home --shell /bin/bash appuser
 
-# Copy Python packages from builder
-COPY --from=builder /root/.local /home/appuser/.local
+
 
 # Copy application code
 COPY --chown=appuser:appuser . .
