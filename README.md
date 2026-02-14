@@ -250,12 +250,16 @@ heroku config:set SECRET_KEY=$(openssl rand -hex 32)
 git push heroku main
 ```
 
-### Railway
+### Zeabur
 
 ```bash
-railway login
-railway init
-railway up
+# Option 1: Deploy source code directly
+# 1. Create a project in Zeabur dashboard
+# 2. Import this GitHub repository
+# 3. Zeabur auto-detects Dockerfile and deploys
+
+# Option 2: Deploy from Docker Hub image
+# Image: gabsgj/image-compressor-using-k-means:latest
 ```
 
 ### Google Cloud Run

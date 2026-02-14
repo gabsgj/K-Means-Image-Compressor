@@ -1,0 +1,25 @@
+apiVersion: zeabur.com/v1
+kind: Template
+metadata:
+  name: K-Means Image Compressor
+spec:
+  description: K-Means based image compression web app
+  icon: https://raw.githubusercontent.com/zeabur/service-icons/main/marketplace/docker.svg
+  tags:
+    - Tool
+    - Python
+  readme: |
+    Deploys the K-Means Image Compressor from Docker Hub.
+  services:
+    - name: image-compressor
+      template: PREBUILT
+      spec:
+        source:
+          image: gabsgj/image-compressor-using-k-means:latest
+        ports:
+          - id: web
+            port: 5000
+            type: HTTP
+        env:
+          PORT:
+            default: "5000"
